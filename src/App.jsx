@@ -22,7 +22,7 @@ import HelpCenter from "./pages/HelpCenter/index.jsx";
 import BestSeller from "./BestSeller.jsx";
 import Unisex from "./Unisex.jsx";
 import Sale from "./Sale.jsx";
-import OrderTracking from "./pages/OrderTrackingjsx";
+import OrderTracking from "./pages/OrderTracking.jsx";
 
 /* Admin */
 import AdminLogin from "./pages/AdminLogin";
