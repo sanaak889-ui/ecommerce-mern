@@ -10,19 +10,19 @@ import FooterBottom from "./components/FooterBottom";
 import ScrollToTop from "./ScrollToTop.jsx";
 
 /* Pages */
-import Home from "./pages/Home";
-import ProductListing from "./pages/ProductListing";
-import ProductPage from "./pages/ProductPage";
-import Cart from "./pages/Cart";
-import Wishlist from "./pages/Wishlist";
-import Compare from "./pages/Compare";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import HelpCenter from "./pages/HelpCenter";
+import Home from "./pages/Home/index.jsx";
+import ProductListing from "./pages/ProductListing/index.jsx";
+import ProductPage from "./pages/ProductPage/index,jsx";
+import Cart from "./pages/Cart/index.jsx";
+import Wishlist from "./pages/Wishlist/index.jsx";
+import Compare from "./pages/Compare/index.jsx";
+import Login from "./pages/Login/index.jsx";
+import Register from "./pages/Register/index.jsx";
+import HelpCenter from "./pages/HelpCenter/index.jsx";
 import BestSeller from "./BestSeller.jsx";
 import Unisex from "./Unisex.jsx";
-import Sale from "./Sale";
-import OrderTracking from "./pages/OrderTracking";
+import Sale from "./Sale.jsx";
+import OrderTracking from "./pages/OrderTrackingjsx";
 
 /* Admin */
 import AdminLogin from "./pages/AdminLogin";
