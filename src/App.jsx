@@ -10,7 +10,7 @@ import FooterBottom from "./components/FooterBottom";
 import ScrollToTop from "./ScrollToTop.jsx";
 
 /* Pages */
-import Home from "./pages/Home";
+import Home from "./pages/Home/index.jsx";
 import ProductListing from "./pages/ProductListing";
 import ProductPage from "./pages/ProductPage";
 import Cart from "./pages/Cart";

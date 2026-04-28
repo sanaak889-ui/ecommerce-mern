@@ -6,16 +6,13 @@ module.exports = {
   ],
   theme: {
     extend: {
-    color:{
-        primary:'#ff5252'
+      colors: {
+        primary: '#ff5252'
+      },
+      backgroundColor: {
+        primary: '#ff5252'
+      }
     },
-    backgroundColor:{
-        primary:'#ff5252'
-    }
-    },
-
   },
- plugins: [
-  require('@tailwindcss/line-clamp'),
-],
+  plugins: [],
 }
