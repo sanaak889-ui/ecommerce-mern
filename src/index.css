@@ -1,0 +1,348 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body{
+	font-family: "Montserrat", sans-serif;
+	font-optical-sizing: auto;
+	background: #f5f0f0;
+	color: rgba(0,0,0,0.9);
+	overflow-x: hidden;
+}
+
+::-webkit-scrollbar{
+	width: 8px !important;
+	height: 8px !important;
+}
+::-webkit-scrollbar-thumb{
+	background: #ff5252;
+}
+::-webkit-scrollbar-track{
+	background: #fff;
+}
+
+.container{
+	width:95%; 
+	margin: auto;
+}
+
+
+.link:hover{
+	color: #ff5252;
+}
+.MuiBadge-badge{
+	background-color: #ff5252 !important
+}
+
+nav ul button{
+	text-transform: capatilize !important;
+	
+}
+
+nav ul button:hover {
+	background: none!important;
+}
+.sliderHome { 
+	overflow: inherit !important;
+}
+/* Prev & Next button box */
+.swiper-button-prev,
+.swiper-button-next {
+  width: 35px !important;
+  height: 35px !important;
+  background: white !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 3px #0000001f, 0 1px 3px #0000003d !important;
+  z-index: 9999 !important;
+}
+
+/* Remove default arrow icon */
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  display: none !important;
+}
+
+
+/* Your custom SVG arrow color */
+.swiper-button-prev svg,
+.swiper-button-next svg {
+  width: 10px !important;
+  height: 15px !important;
+  color: black; /* change arrow color here */
+}
+.swiper-button-prev:hover,
+.swiper-button-next:hover
+{
+	background:#ff5252 !important;
+}
+.swiper-button-prev:hover svg,
+.swiper-button-next:hover svg
+{
+	color: #fff !important;
+}
+
+.smlBtn .swiper-button-prev,
+.smlBtn .swiper-button-next {
+	width: 30px !important;
+	height:30px !important;
+	min-width: 30px !important;
+	
+}
+.smlBtn .swiper-button-prev:hover svg,
+.smlBtn .swiper-button-next:hover svg
+{
+	font-size: 18px !important;
+	color: #fff !important;
+}
+
+.homeCatSlider{
+	overflow: inherit !important;
+}
+
+.homeCatSlider .swiper-button-prev,
+.homeCatSlider .swiper-button-next {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.homeCatSlider .item{
+	border: 1px	solid rgba(0,0,0,0.1);
+}
+
+.homeCatSlider .swiper-button-prev::after,
+.homeCatSlider .swiper-button-next::after {
+    font-size: 16px !important;
+}
+.homeCatSlider .swiper-button-prev,
+.homeCatSlider .swiper-button-next {
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000; /* arrow color */
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+}
+.homeCatSlider .swiper-button-prev{
+	left: -10px !important;
+}
+.homeCatSlider .swiper-button-next{
+	rightt: -10px !important;
+}
+.homeCatSlider .swiper-button-prev:hover{
+	background:#ff5252 !important;
+}
+
+.homeCatSlider .swiper-button-next:hover{
+	background:#ff5252 !important;
+}
+
+.homeCatSlider .swiper-button-prev:hover svg,
+.homeCatSlider .swiper-button-next:hover svg{
+	color: #fff !important;
+}
+
+
+
+.homeCatSlider .item:hover img{
+	transform:scale(1.1);
+}
+
+.MuiTabs-indicator {
+	background-color: #ff5252 !important;
+}
+.MuiTab-textColorPrimary.Mui-selected {
+	color: #ff5252 !important;
+}
+
+.productSlider .swipper-wrapper{
+	padding: 15px;
+	margin-left: -15px;
+	margin-right: -15px;
+}
+
+
+
+
+.part1 {
+  width: 870px !important ;
+}
+
+
+.part1 {
+  height: 450px !important; /* same as banners */
+  overflow: hidden;
+}
+
+.part1 {
+  position: relative;
+}
+
+/* text container */
+.part1 .promoText {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px;
+  color: white;
+  z-index: 10;
+
+  opacity: 0;
+  transform: translateX(150px);
+  transition: all 0.8s ease;
+}
+
+/* show text when slide active */
+.part1 .swiper-slide-active .promoText {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* button */
+.part1 .promoText a {
+  margin-top: 15px;
+  background: #ff5252;
+  padding: 10px 18px;
+  border-radius: 6px;
+  display: inline-block;
+  font-weight: bold;
+  color: white;
+}
+
+/* PRICE SLIDER */
+.price-slider {
+  position: relative;
+  height: 30px;
+  margin-top: 10px;
+}
+
+/* Hide default range style */
+.range-thumb {
+  position: absolute;
+  width: 100%;
+  height: 30px;
+  background: transparent;
+  pointer-events: none;
+  -webkit-appearance: none;
+}
+
+/* Thumb style */
+.range-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border: 2px solid #ff5252;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+.range-thumb::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: white;
+  border: 2px solid #ff5252;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cart-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #007600;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 4px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,0,.3);
+}
+/* If you use Tailwind, put this in your global CSS or tailwind config */
+.cart-toast {
+  @apply animate-slide-in fixed right-5 top-5 z-50 rounded bg-green-600 px-4 py-2 text-white shadow-lg;
+}
+
+/* Optional: slide in animation */
+@keyframes slide-in {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-out forwards;
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.cart-toast-fade {
+  animation: fade-out 0.5s ease forwards;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

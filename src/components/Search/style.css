@@ -1,0 +1,15 @@
+.searchBox input::placeholder, .searchBox input::moz-placeholder, .searchBox input::moz-placeholder {
+	color: #1f1f1f !important;
+}
+.searchBox {
+  overflow: visible;
+}
+
+
+
+
+
+
+
+
+
