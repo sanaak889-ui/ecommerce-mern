@@ -12,7 +12,7 @@ import ScrollToTop from "./ScrollToTop.jsx";
 /* Pages */
 import Home from "./pages/home_temp/index.jsx";
 import ProductListing from "./pages/ProductListing/index.jsx";
-import ProductPage from "./pages/ProductPage/index,jsx";
+import ProductPage from "./pages/ProductPage/index.jsx";
 import Cart from "./pages/Cart/index.jsx";
 import Wishlist from "./pages/Wishlist/index.jsx";
 import Compare from "./pages/Compare/index.jsx";
