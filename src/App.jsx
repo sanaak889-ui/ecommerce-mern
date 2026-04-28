@@ -17,7 +17,7 @@ import Cart from "./pages/Cart/index.jsx";
 import Wishlist from "./pages/Wishlist/index.jsx";
 import Compare from "./pages/Compare/index.jsx";
 import Login from "./pages/Login.jsx";
-import Register from "./pages/Register/index.jsx";
+import Register from "./pages/Register.jsx";
 import HelpCenter from "./pages/HelpCenter/index.jsx";
 import BestSeller from "./BestSeller.jsx";
 import Unisex from "./Unisex.jsx";
