@@ -19,11 +19,8 @@ dotenv.config();
 const app = express();
 
 /* ================= MIDDLEWARE ================= */
-
-// JSON parser
 app.use(express.json());
 
-// CORS (better version than "*")
 app.use(
   cors({
     origin: "*",
@@ -31,13 +28,10 @@ app.use(
   })
 );
 
-/* ================= STATIC FILES (🔥 IMPORTANT FIX) ================= */
-
-// THIS is required for images to show in browser
+/* ================= STATIC FILES ================= */
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* ================= ROUTES ================= */
-
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
@@ -48,16 +42,19 @@ app.use("/api/admin/logo", logoRoutes);
 app.use("/api/slideshow", slideshowRoutes);
 
 /* ================= DATABASE ================= */
-
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB error:", err));
 
-/* ================= SERVER ================= */
+/* ================= HEALTH CHECK (IMPORTANT) ================= */
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
 
+/* ================= SERVER ================= */
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
