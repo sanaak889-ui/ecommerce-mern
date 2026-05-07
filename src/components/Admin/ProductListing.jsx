@@ -11,7 +11,7 @@ const ProductListing = () => {
     price: "",
     countInStock: "",
     description: "",
-    image: "",
+    images: [],
   });
 
   // Fetch products from backend
@@ -29,7 +29,7 @@ const ProductListing = () => {
   // Delete product
   const deleteHandler = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      await api.delete(`/admin/products/${id}`);
+      await api.delete(`/products/admin/${id}`);
       fetchProducts();
     }
   };
@@ -37,7 +37,7 @@ const ProductListing = () => {
   // Update product
   const updateHandler = async () => {
     try {
-      await api.put(`/admin/products/${editingProduct._id}`, form);
+      await api.put(`/products/admin/${editingProduct._id}`, form);
       setEditingProduct(null);
       fetchProducts();
       alert("Product updated!");

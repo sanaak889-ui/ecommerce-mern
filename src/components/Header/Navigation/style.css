@@ -357,3 +357,9 @@
     visibility: visible !important;
   }
 }
+
+@media (max-width: 768px) {
+  .category-panel {
+    display: none;
+  }
+}

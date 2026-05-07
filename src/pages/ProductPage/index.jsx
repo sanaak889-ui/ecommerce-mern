@@ -4,7 +4,7 @@ import { FaArrowLeft, FaRegHeart } from "react-icons/fa";
 import { IoMdGitCompare } from "react-icons/io";
 import Rating from "@mui/material/Rating";
 
-import { CartContext } from "../../context/CartContext";
+import { useCart } from "../../context/CartContext";
 import { WishlistContext } from "../../context/WishlistContext";
 import { CompareContext } from "../../context/CompareContext";
 
@@ -15,7 +15,7 @@ const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart();
   const { addToWishlist, wishlistItems } = useContext(WishlistContext);
   const { addToCompare, compareItems } = useContext(CompareContext);
 

@@ -76,7 +76,7 @@ const ProductListing = () => {
 
   return (
     <section className="py-8">
-      <div className="container mx-auto flex gap-6">
+      <div className="container mx-auto flex flex-col gap-6 px-3 md:flex-row md:px-6">
 
         {/* SIDEBAR */}
         <SideBar
@@ -89,14 +89,14 @@ const ProductListing = () => {
         />
 
         {/* RIGHT SIDE */}
-        <div className="flex-1">
+        <div className="w-full flex-1">
 
           {/* GRID / LIST BAR */}
-          <div className="z-[99] sticky top-[135px] mb-4 flex w-full items-center justify-between rounded-md bg-white p-2 shadow-sm">
-            <div className="flex items-center gap-2">
+         <div className="z-[99] sticky top-[80px] mb-4 flex flex-col gap-2 rounded-md bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
               <Button
                 onClick={() => setViewType("list")}
-                className={`!w-[35px] !h-[35px] !rounded-full ${
+                className={`!w-[32px] !h-[32px] sm:!w-[35px] sm:!h-[35px] !rounded-full ${
                   viewType === "list"
                     ? "!bg-[#ff5252] !text-white"
                     : "!text-gray-600"
@@ -107,7 +107,7 @@ const ProductListing = () => {
 
               <Button
                 onClick={() => setViewType("grid")}
-                className={`!w-[35px] !h-[35px] !rounded-full ${
+                className={`!w-[32px] !h-[32px] sm:!w-[35px] sm:!h-[35px] !rounded-full ${
                   viewType === "grid"
                     ? "!bg-[#ff5252] !text-white"
                     : "!text-gray-600"
@@ -116,12 +116,12 @@ const ProductListing = () => {
                 <BsGridFill className="text-[16px]" />
               </Button>
 
-              <span className="font-[500] pl-3 text-[14px] text-gray-600">
+              <span className="font-[500] text-[12px] text-gray-600 sm:text-[14px]">
                 There are {filteredProducts.length} products
               </span>
             </div>
 
-            <div className="flex items-center gap-2 pr-3">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-[500] text-[14px] text-gray-600">
                 Sort By
               </span>
@@ -133,12 +133,12 @@ const ProductListing = () => {
 
           {/* PRODUCTS */}
           <div
-            className={
-              viewType === "grid"
-                ? "flex flex-wrap gap-6"
-                : "flex flex-col gap-4"
-            }
-          >
+              className={
+                viewType === "grid"
+                  ? "grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                  : "flex flex-col gap-4"
+              }
+            >
             {filteredProducts.map((item, index) => {
               // ✅ Determine if product is in stock
               const sizesStock = item.sizesStock || [];

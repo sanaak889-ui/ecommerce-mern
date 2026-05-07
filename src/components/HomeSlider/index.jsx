@@ -1,4 +1,6 @@
-﻿import React from "react";
+﻿import React, { useEffect, useState } from "react";
+import api from "../../api/axios";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -6,52 +8,57 @@ import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 
 const HomeSlider = () => {
-	return (
-		
-			<div className="homeSlider py-4">
-				<div className="container">
-					<Swiper
-					spaceBetween={10} 
-					navigation={true}
-					 
+  const [slides, setSlides] = useState([]);
 
-					modules={[Navigation, Autoplay]}
-					autoplay={{
-					  delay: 2500,
-					  disableOnInteraction: false,
-					}}
+  const fetchSlides = async () => {
+    try {
+      const { data } = await api.get("/slideshow");
+      setSlides(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-					className="sliderHome">
-            <SwiperSlide>
-			<div className="item overflow-hidden rounded-[20px]">
-			<img src="p1.jpg" alt="Slide 1" className="w-full" />
-			</div></SwiperSlide>
-            
-            <SwiperSlide> 
-			<div className="item overflow-hidden rounded-[20px]">
-			<img src="p2.jpg" alt="Slide 2" className="w-full" />
-			</div></SwiperSlide>
+  useEffect(() => {
+    fetchSlides();
+  }, []);
 
-            <SwiperSlide>
-			<div className="item overflow-hidden rounded-[20px]">
-			<img src="p3.jpg" alt="Slide 3" className="w-full" />
-			</div></SwiperSlide>
+  return (
+    <div className="homeSlider w-full overflow-hidden py-3">
+      <div className="w-full">
 
-            <SwiperSlide>
-			<div className="item overflow-hidden rounded-[20px]">
-			<img src="p4.jpg" alt="Slide 4" className="w-full" />
-			</div></SwiperSlide>
+        <Swiper
+          spaceBetween={0}
+          slidesPerView={1}
+          navigation={true}
+          modules={[Navigation, Autoplay]}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          className="sliderHome w-full"
+        >
 
-            <SwiperSlide>
-			<div className="item overflow-hidden rounded-[20px]">
-			<img src="p5.jpg" alt="Slide 5" className="w-full" />
-			</div></SwiperSlide>
+          {slides.length > 0 ? (
+            slides.map((slide) => (
+              <SwiperSlide key={slide._id}>
+                <div className="w-full overflow-hidden rounded-lg md:rounded-[20px]">
+                  <img
+                    src={slide.image}
+                    className="h-[180px] w-full object-cover sm:h-[250px] md:h-[350px] lg:h-[420px]"
+                  />
+                </div>
+              </SwiperSlide>
+            ))
+          ) : (
+            <p className="p-5 text-center">No slides found</p>
+          )}
 
-           
-      </Swiper>
-		
-				</div>
-			</div>
-		);
-		};
+        </Swiper>
+
+      </div>
+    </div>
+  );
+};
+
 export default HomeSlider;

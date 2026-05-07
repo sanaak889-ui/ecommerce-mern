@@ -1,40 +1,105 @@
-﻿import React from "react";
+﻿import React, { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { FaTrashAlt } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const Cart = () => {
-  const { cartItems, increaseQty, decreaseQty, removeFromCart, clearCart } =
-    useCart();
+  const {
+    cartItems,
+    increaseQty,
+    decreaseQty,
+    removeFromCart,
+    clearCart,
+  } = useCart();
 
-  // Calculate subtotal
-  const subtotal = cartItems.reduce(
-    (total, item) => total + Number(item.price) * Number(item.qty),
-    0
-  );
+  const [address, setAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("COD");
 
-  // Helper to get stock for each cart item
+  // =========================
+  // SAFE SUBTOTAL (FIXED)
+  // =========================
+  const subtotal = cartItems.reduce((total, item) => {
+    const price = Number(item.price) || 0;
+    const qty = Number(item.qty) || 1;
+    return total + price * qty;
+  }, 0);
+
+  // =========================
+  // STOCK HELPER
+  // =========================
   const getItemStock = (item) => {
-    // If sizesStock exists and a size is selected
     if (item.sizesStock && item.selectedSize) {
       if (Array.isArray(item.sizesStock)) {
-        // Array format
         const sizeObj = item.sizesStock.find(
           (s) => s.size === item.selectedSize
         );
         return sizeObj?.qty || 0;
-      } else if (typeof item.sizesStock === "object") {
-        // Object format
+      } else {
         return item.sizesStock[item.selectedSize] || 0;
       }
     }
-    // Fallback to general countInStock
     return item.countInStock || 0;
+  };
+
+  // =========================
+  // PLACE ORDER
+  // =========================
+  const placeOrder = async () => {
+    if (!address) return toast.error("Please enter address");
+    if (cartItems.length === 0) return toast.error("Cart is empty");
+
+    try {
+      // FIXED TOKEN (admin + user safe)
+      const token =
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("Please login first");
+        return;
+      }
+
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          orderItems: cartItems.map((item) => ({
+            product: item._id,
+            name: item.name || item.title,
+            qty: item.qty || 1,
+            price: Number(item.price) || 0,
+          })),
+          shippingAddress: {
+            address: address,
+          },
+          paymentMethod,
+          totalPrice: subtotal,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Order failed");
+      }
+
+      toast.success("Order placed successfully!");
+
+      clearCart();
+      setAddress("");
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* LEFT: CART ITEMS */}
+
+        {/* LEFT SIDE */}
         <div className="rounded bg-white p-6 shadow-lg lg:col-span-2">
           <h2 className="mb-4 border-b pb-2 text-2xl font-bold">
             Shopping Cart
@@ -48,7 +113,6 @@ const Cart = () => {
 
           {cartItems.map((item) => {
             const stockQty = getItemStock(item);
-            const inStock = stockQty > 0;
 
             return (
               <div
@@ -57,115 +121,117 @@ const Cart = () => {
               >
                 {/* IMAGE */}
                 <div className="flex gap-2">
-                  {item.images?.map((img, index) => (
+                  {item.images?.map((img, i) => (
                     <img
-                      key={index}
+                      key={i}
                       src={img}
-                      alt={item.title}
-                      className="h-24 w-24 rounded border object-contain transition-transform hover:scale-110"
+                      className="h-24 w-24 rounded border object-contain"
+                      alt=""
                     />
                   ))}
                 </div>
 
-                {/* PRODUCT INFO */}
-                <div className="flex flex-1 flex-col justify-between lg:ml-4">
-                  <div>
-                    <h3 className="line-clamp-2 text-lg font-semibold">
-                      {item.title}
-                    </h3>
-                    {item.selectedSize && (
-                      <p className="text-sm text-gray-500">
-                        Size: {item.selectedSize}
-                      </p>
-                    )}
-                    <p
-                      className={`mt-1 text-sm font-medium ${
-                        inStock ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {inStock ? "In Stock" : "Out of Stock"}
-                    </p>
-                    <p className="mt-1 text-xl font-bold text-[#ff5252]">
-                      ${item.price}
-                    </p>
-                  </div>
+                {/* DETAILS */}
+                <div className="flex flex-1 flex-col lg:ml-4">
+                  <h3 className="font-semibold">
+                    {item.name || item.title}
+                  </h3>
 
-                  {/* QUANTITY & REMOVE */}
+                  <p className="text-xl font-bold text-[#ff5252]">
+                    ${item.price}
+                  </p>
+
+                  {/* QTY CONTROLS */}
                   <div className="mt-2 flex items-center gap-3">
                     <button
                       onClick={() =>
                         decreaseQty(item._id, item.selectedSize)
                       }
-                      disabled={!inStock}
-                      className="px-3 py-1 rounded border hover:bg-gray-200 transition disabled:opacity-50"
+                      className="border px-3"
                     >
-                      −
+                      -
                     </button>
-                    <span className="rounded border px-3 py-1">{item.qty}</span>
+
+                    <span>{item.qty}</span>
+
                     <button
                       onClick={() =>
-                        increaseQty(item._id, item.selectedSize, stockQty)
+                        increaseQty(item._id, item.selectedSize)
                       }
-                      disabled={!inStock || item.qty >= stockQty}
-                      className="px-3 py-1 rounded border hover:bg-gray-200 transition disabled:opacity-50"
+                      className="border px-3"
                     >
                       +
                     </button>
 
                     <button
-                      onClick={() => removeFromCart(item._id, item.selectedSize)}
-                      className="ml-4 flex items-center gap-1 text-red-600 hover:text-red-800 transition"
+                      onClick={() =>
+                        removeFromCart(item._id, item.selectedSize)
+                      }
+                      className="text-red-600"
                     >
-                      <FaTrashAlt /> Remove
+                      <FaTrashAlt />
                     </button>
                   </div>
-                  {stockQty < item.qty && inStock && (
-                    <p className="mt-1 text-sm text-red-600">
-                      Only {stockQty} left in stock
-                    </p>
-                  )}
                 </div>
               </div>
             );
           })}
 
-          {/* CLEAR CART BUTTON */}
+          {/* CLEAR CART */}
           {cartItems.length > 0 && (
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={clearCart}
-                className="rounded bg-red-600 px-6 py-2 font-bold text-white transition hover:bg-red-700"
-              >
-                Clear Cart
-              </button>
-            </div>
+            <button
+              onClick={clearCart}
+              className="mt-4 rounded bg-red-600 px-4 py-2 text-white"
+            >
+              Clear Cart
+            </button>
           )}
         </div>
 
-        {/* RIGHT: ORDER SUMMARY */}
+        {/* RIGHT SIDE */}
         <div className="h-fit rounded bg-white p-6 shadow-lg">
-          <h3 className="text-lg font-bold">Order Summary</h3>
+          <h3 className="font-bold">Order Summary</h3>
 
-          <p className="mt-2 text-xl font-bold text-gray-800">
+          <p className="mt-2 text-xl font-bold">
             Subtotal: ${subtotal.toFixed(2)}
           </p>
 
+          {/* ADDRESS */}
           <textarea
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter delivery address"
-            className="mt-3 w-full rounded border p-2 focus:outline-[#ff5252]"
+            className="mt-3 w-full border p-2"
           />
 
+          {/* PAYMENT */}
           <div className="mt-3">
-            <p className="font-semibold">Payment Method</p>
-            <label className="mt-1 block">
-              <input type="radio" name="pay" /> Cash on Delivery
+            <label>
+              <input
+                type="radio"
+                checked={paymentMethod === "COD"}
+                onChange={() => setPaymentMethod("COD")}
+              />{" "}
+              Cash on Delivery
             </label>
-            <label className="mt-1 block">
-              <input type="radio" name="pay" /> Pay with Card
+
+            <br />
+
+            <label>
+              <input
+                type="radio"
+                checked={paymentMethod === "CARD"}
+                onChange={() => setPaymentMethod("CARD")}
+              />{" "}
+              Card
             </label>
           </div>
 
-          <button className="mt-4 w-full rounded bg-[#ff5252] p-3 font-bold text-white transition hover:bg-red-600">
+          {/* PLACE ORDER */}
+          <button
+            onClick={placeOrder}
+            className="mt-4 w-full bg-[#ff5252] p-3 font-bold text-white"
+          >
             Place Order
           </button>
         </div>

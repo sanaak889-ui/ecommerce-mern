@@ -1,11 +1,12 @@
-// src/components/ProtectedAdminRoute.jsx
-import React from "react";
+﻿import React from "react";
 import { Navigate } from "react-router-dom";
 
 const ProtectedAdminRoute = ({ children }) => {
-  const token = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem("adminToken");
+  const adminUser = JSON.parse(localStorage.getItem("adminUser"));
 
-  if (!token) {
+  // 🔥 ONLY ADMIN DATA CONTROLS ADMIN ROUTE
+  if (!adminToken || !adminUser?.isAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 

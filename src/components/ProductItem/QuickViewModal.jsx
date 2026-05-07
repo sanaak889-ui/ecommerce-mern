@@ -51,6 +51,14 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
     setTotalStock(stock);
   }, [product]);
 
+  useEffect(() => {
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, []);
+
   const inStock = totalStock > 0;
 
   // --- FLY TO CART ---
@@ -137,22 +145,22 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
 
   return ReactDOM.createPortal(
     <div className="z-[9999] fixed inset-0 flex items-center justify-center bg-black/70 p-4">
-      <div className="relative w-full max-w-6xl rounded-xl bg-white shadow-2xl md:flex">
+      <div className="relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-xl bg-white shadow-2xl md:flex">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full bg-gray-200 p-2"
+          className="absolute right-3 top-3 z-10 rounded-full bg-gray-200 p-2 hover:bg-gray-300"
         >
           <MdClose size={22} />
         </button>
 
         {/* LEFT: IMAGES */}
-        <div className="flex w-full gap-4 p-4 md:w-1/2">
-          <div className="flex gap-2 md:flex-col">
+        <div className="flex w-full flex-col gap-4 p-4 md:w-1/2 md:flex-row">
+          <div className="flex gap-2 overflow-x-auto md:flex-col md:overflow-visible">
             {product.images?.map((img, i) => (
               <div
                 key={i}
                 onClick={() => setSelectedImage(img)}
-                className={`h-20 w-20 cursor-pointer overflow-hidden rounded border ${
+                className={`h-16 w-16 flex-shrink-0 md:h-20 md:w-20 cursor-pointer overflow-hidden rounded border ${
                   selectedImage === img ? "border-red-600" : "border-gray-300"
                 }`}
               >
@@ -168,7 +176,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
 
           <div
             id="quickview-main-img"
-            className="flex flex-1 items-center justify-center rounded border"
+            className="relative flex h-[250px] w-full items-center justify-center rounded border sm:h-[350px] md:h-auto"
           >
             {selectedImage && (
               <ImageMagnifier
@@ -185,8 +193,8 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
         </div>
 
         {/* RIGHT: PRODUCT INFO */}
-        <div className="flex flex-1 flex-col gap-4 p-6">
-          <h2 className="text-2xl font-bold">{product.name || product.title}</h2>
+        <div className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
+          <h2 className="text-lg font-bold sm:text-xl md:text-2xl">{product.name || product.title}</h2>
 
           {renderRating()}
 
@@ -219,11 +227,11 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
           )}
 
           {/* ACTION BUTTONS */}
-          <div className="mt-4 flex gap-3">
+          <div className="mt-4 flex flex-wrap gap-3">
             <button
               onClick={handleAddToCart}
               disabled={!inStock}
-              className={`flex items-center gap-2 rounded px-6 py-2 font-bold text-white ${
+              className={`flex w-full sm:w-auto items-center justify-center gap-2 rounded px-6 py-2 font-bold text-white ${
                 inStock ? "bg-red-600 hover:bg-red-700" : "bg-gray-400 cursor-not-allowed"
               }`}
             >

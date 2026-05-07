@@ -7,7 +7,7 @@ const OrderListing = () => {
 
  const fetchOrders = async () => {
   try {
-    const { data } = await api.get("/admin/orders");
+    const { data } = await api.get("/api/admin/orders");
     setOrders(data);
   } catch (error) {
     alert("Failed to load orders");

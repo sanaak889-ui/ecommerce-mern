@@ -2,110 +2,128 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation, Autoplay } from "swiper/modules";
-import { Link } from 'react-router-dom';
+import { Navigation } from "swiper/modules";
+import { Link } from "react-router-dom";
 
 const HomeCatSlider = () => {
   return (
-    <div className="homeCatSlider py-8 pt-4">
-      <div className="container">
+    <div className="homeCatSlider overflow-hidden py-6">
+
+      {/* FULL WIDTH FIX */}
+      <div className="w-full px-2 md:px-4">
+
         <Swiper
-        slidesPerView={8}
-        spaceBetween={10}
-        navigation={true}
-         breakpoints={{
-        0: { slidesPerView: 2 },
-        640: { slidesPerView: 4 },
-        1024: { slidesPerView: 6 },
-        1280: { slidesPerView: 8 },
-      }}
-        modules={[Navigation]}
-       
-        className="mySwiper"
-      >
-        <SwiperSlide>
-        <Link to="/productListing/Fashion">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC1.png" className="h-[60px] w-[60px]"/>
-                <h3 className="font-[500] mt-3 text-[15px] transition-all">Fashion</h3>
-            </div></Link>
-        </SwiperSlide>
+          spaceBetween={10}
+          navigation={true}
+          grabCursor={true}
+          modules={[Navigation]}
+          className="mySwiper"
 
-         <SwiperSlide>
-        <Link to="/productListing/Electronics">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC2.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Electronics</h3>
-            </div></Link>
-        </SwiperSlide>
+          /* ✅ RESPONSIVE FIX */
+          breakpoints={{
+            0: {
+              slidesPerView: 2,
+            },
+            480: {
+              slidesPerView: 3,
+            },
+            640: {
+              slidesPerView: 4,
+            },
+            768: {
+              slidesPerView: 5,
+            },
+            1024: {
+              slidesPerView: 6,
+            },
+            1280: {
+              slidesPerView: 8,
+            },
+          }}
+        >
 
-         <SwiperSlide>
-        <Link to="/productListing/Bags">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC3.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Bags</h3>
-            </div></Link>
-        </SwiperSlide>
+          {/* ITEM 1 */}
+          <SwiperSlide>
+            <Link to="/productListing/Fashion">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC1.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Fashion</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-         <SwiperSlide>
-        <Link to="/productListing/Footwear">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC4.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Footwear</h3>
-            </div></Link>
-        </SwiperSlide>
+          {/* ITEM 2 */}
+          <SwiperSlide>
+            <Link to="/productListing/Electronics">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC2.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Electronics</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-         <SwiperSlide>
-        <Link to="/productListing/Groceries">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC5.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Groceries</h3>
-            </div></Link>
-        </SwiperSlide>
+          {/* ITEM 3 */}
+          <SwiperSlide>
+            <Link to="/productListing/Bags">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC3.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Bags</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-         <SwiperSlide>
-        <Link to="/productListing/Beauty">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC6.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Beauty</h3>
-            </div></Link>
-        </SwiperSlide>
+          {/* ITEM 4 */}
+          <SwiperSlide>
+            <Link to="/productListing/Footwear">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC4.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Footwear</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-         <SwiperSlide>
-        <Link to="/productListing/Wellness">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC7.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Wellness</h3>
-            </div></Link>
-        </SwiperSlide>
+          {/* ITEM 5 */}
+          <SwiperSlide>
+            <Link to="/productListing/Groceries">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC5.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Groceries</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-         <SwiperSlide>
-        <Link to="/productListing/Jewellery">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC8.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Jewelery</h3>
-            </div></Link>
-        </SwiperSlide>
-         <SwiperSlide>
-        <Link to="/productListing/Furniture">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC9.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Furniture</h3>
-            </div></Link>
-        </SwiperSlide>
-         <SwiperSlide>
-        <Link to="/productListing/Perfumes">
-            <div className="item flex flex-col items-center justify-center rounded-sm bg-white px-3 py-7 text-center">
-                <img src="HC10.png" className="h-[60px] w-[60px] transition-all"/>
-                <h3 className="font-[500] mt-3 text-[15px]">Perfumes</h3>
-            </div></Link>
-        </SwiperSlide>
+          {/* ITEM 6 */}
+          <SwiperSlide>
+            <Link to="/productListing/Beauty">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC6.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Beauty</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-    
+          {/* ITEM 7 */}
+          <SwiperSlide>
+            <Link to="/productListing/Furniture">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC9.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Furniture</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
 
-       
-      
-      </Swiper>
+          {/* ITEM 8 */}
+          <SwiperSlide>
+            <Link to="/productListing/Perfumes">
+              <div className="item flex flex-col items-center justify-center rounded-md bg-white px-3 py-6 text-center shadow-sm transition hover:scale-105">
+                <img src="HC10.png" className="h-[45px] w-[45px] md:h-[60px] md:w-[60px]" />
+                <h3 className="mt-2 font-medium text-[12px] md:text-[14px]">Perfumes</h3>
+              </div>
+            </Link>
+          </SwiperSlide>
+
+        </Swiper>
+
       </div>
     </div>
   );

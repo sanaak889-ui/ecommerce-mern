@@ -80,13 +80,13 @@ const beautyProducts = useMemo(
       <FlashSaleCountdown />
 
       {/* PROMO + 4 IMAGE SLIDER SECTION */}
-      <section className="bg-white py-6">
-        <div className="container mx-auto flex flex-col gap-5 lg:flex-row">
-          <div className="part1 relative h-[430px] w-full max-w-full overflow-hidden lg:w-[70%]">
+     <section className="overflow-hidden bg-white py-6">
+  <div className="container mx-auto flex max-w-full flex-col gap-5 overflow-hidden lg:flex-row">
+          <div className="part1 relative h-[250px] w-full min-w-0 overflow-hidden sm:h-[320px] lg:h-[430px] lg:w-[70%]">
             <PromoSlider />
           </div>
 
-          <div className="flex w-full flex-row gap-5 lg:w-[30%] lg:flex-col">
+          <div className="flex w-full min-w-0 flex-col gap-4 sm:flex-row lg:w-[30%] lg:flex-col">
             <div className="bannerBoxV2 group relative overflow-hidden rounded-md">
               <img src="JD.jpg" className="h-[170px] w-full object-cover transition-all duration-150 group-hover:scale-105 md:h-[200px] lg:h-[215px]" alt="Dream Offer"/>
               <div className="absolute left-0 top-0 z-50 flex h-full flex-col justify-center gap-2 p-6 text-white">
@@ -112,12 +112,12 @@ const beautyProducts = useMemo(
       <section className="bg-white py-8">
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
-            <div className="leftsec w-full lg:w-[40%]">
+            <div className="leftsec mb-3 w-full lg:mb-0 lg:w-[40%]">
               <h2 className="font-[600] text-[20px]">Popular Products</h2>
               <p className="text-[14px]">Do not miss the current offers.</p>
             </div>
 
-            <div className="rightsec group relative w-[60%]">
+            <div className="rightsec group relative w-full overflow-x-auto lg:w-[60%]">
               <Tabs
                 value={value}
                 onChange={handleChange}

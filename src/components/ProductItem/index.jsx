@@ -9,7 +9,7 @@ import { MdZoomOutMap } from "react-icons/md";
 import QuickViewModal from "./QuickViewModal";
 import { useWishlist } from "../../context/WishlistContext";
 import { CompareContext } from "../../context/CompareContext";
-import { CartContext } from "../../context/CartContext";
+import { useCart } from "../../context/CartContext";
 import { toast } from "react-hot-toast";
 
 // ✅ FIXED STOCK FUNCTION (ONLY LOGIC UPDATED)
@@ -56,7 +56,7 @@ const ProductItem = ({
   const [cartAnim, setCartAnim] = useState(false);
   const clickSound = new Audio("/sounds/click.mp3");
 
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart();
   const { addToWishlist, wishlistItems } = useWishlist();
   const { addToCompare, compareItems } = useContext(CompareContext);
 

@@ -7,7 +7,7 @@ const Chatbot = () => {
     { text: "Hello! How can I assist you today?", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const messagesEndRef = useRef(null);

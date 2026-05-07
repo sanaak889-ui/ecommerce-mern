@@ -1,98 +1,145 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
 import toast from "react-hot-toast";
 
-const AdminBanners = () => {
+const AdminBanner = () => {
   const [banners, setBanners] = useState([]);
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState("banner"); // banner, slide, logo
-  const [image, setImage] = useState(null);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchBanners = async () => {
+  // FETCH EXISTING BANNERS
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
     try {
-      const { data } = await api.get("/banners");
-      setBanners(data);
+      const res = await api.get("/home-content");
+      setBanners(res.data?.adsBanner || []);
     } catch (err) {
-      toast.error(err.response?.data.message || "Failed to fetch banners");
+      toast.error("Failed to load banners");
     }
   };
 
-  useEffect(() => {
-    fetchBanners();
-  }, []);
+  // MULTIPLE UPLOAD FUNCTION
+  const uploadImage = async () => {
+    if (!files.length) {
+      toast.error("Please select images first");
+      return;
+    }
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!image) return toast.error("Select an image");
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("type", type);
-    formData.append("image", image);
-
-    setLoading(true);
     try {
-      await api.post("/banners", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      setLoading(true);
+
+      const formData = new FormData();
+
+      files.forEach((file) => {
+        formData.append("images", file); // 🔥 IMPORTANT: "images"
       });
-      toast.success("Banner uploaded!");
-      setTitle("");
-      setType("banner");
-      setImage(null);
-      fetchBanners();
+
+      const res = await api.post("/upload", formData);
+
+      const urls = res.data?.urls;
+
+      if (!urls || urls.length === 0) {
+        toast.error("Upload failed");
+        return;
+      }
+
+      const updated = [...banners, ...urls];
+
+      await api.put("/home-content", {
+        adsBanner: updated,
+      });
+
+      setBanners(updated);
+      setFiles([]);
+
+      // reset input
+      const input = document.querySelector('input[type="file"]');
+      if (input) input.value = "";
+
+      toast.success("Banners uploaded!");
     } catch (err) {
-      toast.error(err.response?.data.message || "Upload failed");
+      console.log("UPLOAD ERROR:", err?.response?.data || err);
+      toast.error(err?.response?.data?.message || "Upload failed");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div>
-      <h2 className="mb-4 text-xl font-bold">Banners / Slides</h2>
+  // DELETE BANNER
+  const deleteBanner = async (index) => {
+    try {
+      const updated = banners.filter((_, i) => i !== index);
 
-      <form onSubmit={handleUpload} className="mb-6 flex gap-2">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 rounded flex-1"
-        />
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="banner">Banner</option>
-          <option value="slide">Slide</option>
-        </select>
+      await api.put("/home-content", {
+        adsBanner: updated,
+      });
+
+      setBanners(updated);
+      toast.success("Banner deleted");
+    } catch (err) {
+      toast.error("Delete failed");
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold text-[#ff5252]">
+        Upload Banners (Multiple Allowed)
+      </h2>
+
+      {/* UPLOAD SECTION */}
+      <div className="mt-4 flex items-center gap-3">
         <input
           type="file"
-          onChange={(e) => setImage(e.target.files[0])}
-          className="border p-2 rounded"
+          accept="image/*"
+          multiple
+          onChange={(e) => setFiles(Array.from(e.target.files))}
         />
+
         <button
-          type="submit"
-          className="rounded bg-[#ff5252] px-4 text-white"
+          onClick={uploadImage}
           disabled={loading}
+          className="bg-[#ff5252] px-4 py-2 text-white disabled:opacity-50"
         >
           {loading ? "Uploading..." : "Upload"}
         </button>
-      </form>
+      </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {banners.map((b) => (
-          <div key={b._id} className="rounded bg-white p-2 shadow">
-            <img src={b.image} alt={b.title} className="mb-2 h-32 w-full rounded object-cover" />
-            <p className="text-sm font-semibold">{b.title}</p>
-            <p className="text-xs text-gray-500">{b.type}</p>
-          </div>
-        ))}
+      {/* PREVIEW SELECTED FILES */}
+      {files.length > 0 && (
+        <p className="mt-2 text-sm text-gray-500">
+          {files.length} file(s) selected
+        </p>
+      )}
+
+      {/* BANNERS GRID */}
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {banners.length > 0 ? (
+          banners.map((img, i) => (
+            <div key={i} className="relative">
+              <img
+                src={img}
+                alt="banner"
+                className="h-40 w-full rounded object-cover"
+              />
+
+              <button
+                onClick={() => deleteBanner(i)}
+                className="absolute right-2 top-2 rounded bg-red-500 px-2 text-white"
+              >
+                X
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No banners found</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default AdminBanners;
+export default AdminBanner;

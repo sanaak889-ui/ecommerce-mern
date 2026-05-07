@@ -5,85 +5,90 @@ import toast from "react-hot-toast";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // If admin already logged in, redirect
     const token = localStorage.getItem("adminToken");
-    if (token) {
-      navigate("/admin/dashboard");
+    const user = JSON.parse(localStorage.getItem("adminUser"));
+
+    if (token && user?.isAdmin) {
+      navigate("/admin", { replace: true });
     }
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      return toast.error("Please fill all fields");
+    }
+
     setLoading(true);
+
     try {
-      const { data } = await axios.post("http://localhost:5000/api/admin/login", {
-        email,
-        password,
-      });
+      const { data } = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password }
+      );
 
-      // Save token in localStorage
+      // ❗ CHECK ADMIN FIRST (but safely)
+      if (!data?.isAdmin) {
+        toast.error("Not an admin user");
+        setLoading(false);
+        return;
+      }
+
       localStorage.setItem("adminToken", data.token);
-      toast.success("Login successful!");
-      setLoading(false);
+      localStorage.setItem("adminUser", JSON.stringify(data));
 
-      // Redirect to dashboard
-      navigate("/admin/dashboard");
+      toast.success("Login successful!");
+
+      navigate("/admin", { replace: true });
+
     } catch (err) {
-      console.error(err);
+      console.log("LOGIN ERROR:", err.response?.data);
       toast.error(err.response?.data?.message || "Login failed");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md rounded bg-white p-8 shadow">
-        <h2 className="mb-6 text-center text-2xl font-bold text-[#ff5252]">Admin Login</h2>
+      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
+
+        <h2 className="mb-6 text-center text-2xl font-bold text-red-500">
+          Admin Login
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block font-medium">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-1 block font-medium">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
-              required
-            />
-          </div>
+
+          <input
+            className="w-full rounded border p-2"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            className="w-full rounded border p-2"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
           <button
-            type="submit"
-            className="w-full rounded bg-[#ff5252] py-2 text-white hover:bg-red-600"
             disabled={loading}
+            className="w-full rounded bg-red-500 py-2 text-white disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
 
-        <div className="mt-3 text-center">
-  <p className="text-sm text-gray-500">
-    Don't have an admin account?{" "}
-    <span
-      onClick={() => window.location.href = "/admin/create-admin"}
-      className="text-[#ff5252] hover:underline cursor-pointer"
-    >
-      Create one
-    </span>
-  </p>
-</div>
         </form>
       </div>
     </div>

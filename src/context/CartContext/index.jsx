@@ -1,86 +1,89 @@
-﻿import React, { createContext, useState, useContext } from "react";
+﻿import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-// Create context
-export const CartContext = createContext();
-export const useCart = () => useContext(CartContext);
+// 1. Create context
+const CartContext = createContext();
 
-// Provider
+// 2. Provider
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  // Add to cart
-  const addToCart = (product) => {
-    const { _id, selectedSize, countInStock, sizesStock, qty = 1 } = product;
+  // SAVE TO LOCAL STORAGE (fix refresh issue)
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
 
-    // Determine stock
-    const stock =
-      sizesStock?.length > 0
-        ? sizesStock.find((s) => s.size === selectedSize)?.qty || 0
-        : countInStock || 0;
-
-    if (stock <= 0) {
-      toast.error("🚫 This product is Out of Stock");
-      return;
-    }
-
-    // Check if product already exists in cart
-    const found = cartItems.find(
-      (p) => p._id === _id && p.selectedSize === selectedSize
-    );
-
-    if (found) {
-      setCartItems((prev) =>
-        prev.map((p) =>
-          p._id === _id && p.selectedSize === selectedSize
-            ? { ...p, qty: p.qty + 1 }
-            : p
-        )
+  // ADD TO CART (basic safe version)
+  const addToCart = (item) => {
+    setCartItems((prev) => {
+      const exists = prev.find(
+        (x) =>
+          x._id === item._id &&
+          x.selectedSize === item.selectedSize
       );
-    } else {
-      setCartItems((prev) => [
-        ...prev,
-        { ...product, qty: 1, image: product.images?.[0] || "" },
-      ]);
-    }
 
-    toast.success(
-      `🛒 Added ${selectedSize ? `(${selectedSize})` : ""} to Cart`
-    );
+      if (exists) {
+        return prev.map((x) =>
+          x._id === item._id && x.selectedSize === item.selectedSize
+            ? { ...x, qty: x.qty + 1 }
+            : x
+        );
+      }
+
+      return [...prev, { ...item, qty: 1 }];
+    });
+
+    toast.success("Added to cart");
   };
 
-  const increaseQty = (_id, selectedSize) => {
+  // INCREASE QTY
+  const increaseQty = (id, size) => {
     setCartItems((prev) =>
-      prev.map((p) =>
-        p._id === _id && p.selectedSize === selectedSize
-          ? { ...p, qty: p.qty + 1 }
-          : p
+      prev.map((item) =>
+        item._id === id && item.selectedSize === size
+          ? { ...item, qty: item.qty + 1 }
+          : item
       )
     );
   };
 
-  const decreaseQty = (_id, selectedSize) => {
+  // DECREASE QTY
+  const decreaseQty = (id, size) => {
     setCartItems((prev) =>
-      prev.map((p) =>
-        p._id === _id && p.selectedSize === selectedSize && p.qty > 1
-          ? { ...p, qty: p.qty - 1 }
-          : p
+      prev
+        .map((item) =>
+          item._id === id && item.selectedSize === size
+            ? { ...item, qty: item.qty - 1 }
+            : item
+        )
+        .filter((item) => item.qty > 0)
+    );
+  };
+
+  // REMOVE ITEM
+  const removeFromCart = (id, size) => {
+    setCartItems((prev) =>
+      prev.filter(
+        (item) =>
+          !(item._id === id && item.selectedSize === size)
       )
     );
   };
 
-  const removeFromCart = (_id, selectedSize) => {
-    setCartItems((prev) =>
-      prev.filter((p) => !(p._id === _id && p.selectedSize === selectedSize))
-    );
+  // CLEAR CART
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("cart");
   };
-
-  const clearCart = () => setCartItems([]);
 
   return (
     <CartContext.Provider
       value={{
         cartItems,
+        setCartItems,
         addToCart,
         increaseQty,
         decreaseQty,
@@ -92,3 +95,8 @@ export const CartProvider = ({ children }) => {
     </CartContext.Provider>
   );
 };
+
+// 3. Hook (IMPORTANT)
+export const useCart = () => useContext(CartContext);
+
+// ❌ DO NOT export default anything else

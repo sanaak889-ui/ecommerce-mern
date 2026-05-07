@@ -9,7 +9,7 @@ const AdminSidebar = () => {
     { name: "Orders", path: "/admin/orders", icon: <FaShoppingCart /> },
     { name: "Products", path: "/admin/products", icon: <FaBox /> },
     { name: "Users", path: "/admin/users", icon: <FaUsers /> },
-    { name: "Category", path: "/admin/category", icon: <FaTags /> },
+    { name: "Slideshow", path: "/admin/slideshow", icon: <FaTags /> },
     { name: "Banner", path: "/admin/banner", icon: <FaImage /> },
     { name: "Logo", path: "/admin/logo", icon: <FaFlag /> },
   ];

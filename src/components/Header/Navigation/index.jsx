@@ -11,13 +11,13 @@ const Navigation = () => {
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
 
   const openCategoryPanel = () => {
-    setIsOpenCatPanel(true);
-  }
+  setIsOpenCatPanel(true);
+};
 
   return (
     <>
-      <nav className="py-2">
-        <div className="container flex items-center justify-end gap-8">
+      <nav className="hidden py-2 md:block">
+        <div className="container flex items-center justify-between gap-8">
 
           {/* Category Button */}
           <div className="col_1 w-[20%]">
@@ -239,6 +239,7 @@ const Navigation = () => {
                   More 
                 </Button>
                 <ul className="z-[99999] absolute left-0 top-full hidden w-48 rounded-md bg-white shadow-xl group-hover:block">
+
                   <li><Link to="/productListing/Jewellery" className="block px-4 py-2 hover:bg-[#ff5252] hover:text-white">Jewellery</Link></li>
                   <li><Link to="/productListing/Furniture" className="block px-4 py-2 hover:bg-[#ff5252] hover:text-white">Furniture</Link></li>
                   <li><Link to="/productListing/Perfumes" className="block px-4 py-2 hover:bg-[#ff5252] hover:text-white">Perfumes</Link></li>

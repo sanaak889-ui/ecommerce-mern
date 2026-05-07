@@ -7,12 +7,13 @@ const AdminLogo = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // FETCH LOGO
   const fetchLogo = async () => {
     try {
-      const { data } = await api.get("/banners?type=logo");
-      if (data.length > 0) setLogo(data[0]);
+      const { data } = await api.get("/admin/logo");
+      setLogo(data || null);
     } catch (err) {
-      toast.error(err.response?.data.message || "Failed to fetch logo");
+      toast.error("Failed to fetch logo");
     }
   };
 
@@ -20,31 +21,69 @@ const AdminLogo = () => {
     fetchLogo();
   }, []);
 
+  // DELETE LOGO
+  const handleDelete = async () => {
+    if (!logo?._id) return;
+
+    try {
+      await api.delete(`/admin/logo/${logo._id}`);
+      setLogo(null);
+      setFile(null);
+      toast.success("Logo deleted!");
+    } catch (err) {
+      toast.error("Delete failed");
+    }
+  };
+
+  // UPLOAD / UPDATE LOGO
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) return toast.error("Select an image");
 
-    const formData = new FormData();
-    formData.append("type", "logo");
-    formData.append("image", file);
+    if (!file) {
+      toast.error("Select an image");
+      return;
+    }
 
-    setLoading(true);
     try {
-      if (logo) {
-        await api.put(`/banners/${logo._id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      let res;
+
+      if (logo?._id) {
+        res = await api.put(
+          `/admin/logo/${logo._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         toast.success("Logo updated!");
       } else {
-        await api.post("/banners", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        res = await api.post(
+          "/admin/logo",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         toast.success("Logo uploaded!");
       }
+
+      setLogo(res.data);
       setFile(null);
-      fetchLogo();
+
     } catch (err) {
-      toast.error(err.response?.data.message || "Upload failed");
+      console.log(err);
+      toast.error(err?.response?.data?.message || "Upload failed");
     } finally {
       setLoading(false);
     }
@@ -54,8 +93,15 @@ const AdminLogo = () => {
     <div>
       <h2 className="mb-4 text-xl font-bold">Logo</h2>
 
+      {/* UPLOAD FORM */}
       <form onSubmit={handleUpload} className="mb-6 flex gap-2">
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="border p-2 rounded" />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="border p-2 rounded"
+        />
+
         <button
           type="submit"
           className="rounded bg-[#ff5252] px-4 text-white"
@@ -65,9 +111,23 @@ const AdminLogo = () => {
         </button>
       </form>
 
-      {logo && (
-        <div className="rounded bg-white p-4 shadow">
-          <img src={logo.image} alt="Logo" className="h-32 object-contain" />
+      {/* PREVIEW */}
+      {logo?.image && (
+        <div className="flex flex-col items-center gap-3 rounded bg-white p-4 shadow">
+          
+          <img
+            src={logo.image}
+            alt="Logo"
+            className="h-16 object-contain"
+          />
+
+          {/* DELETE BUTTON */}
+          <button
+            onClick={handleDelete}
+            className="rounded bg-red-500 px-4 py-1 text-white"
+          >
+            Delete Logo
+          </button>
         </div>
       )}
     </div>

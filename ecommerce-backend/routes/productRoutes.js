@@ -5,11 +5,18 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 /* =====================================================
+   HELPER
+===================================================== */
+const calculateTotalStock = (sizesStock = []) => {
+  return sizesStock.reduce((sum, item) => {
+    return sum + Number(item.qty || 0);
+  }, 0);
+};
+
+/* =====================================================
    PUBLIC ROUTES
 ===================================================== */
 
-// ✅ GET ALL PRODUCTS
-// /api/products?category=Fashion&subcategory=Men&subSubcategory=T-Shirts&latest=true
 router.get("/", async (req, res) => {
   try {
     const { category, subcategory, subSubcategory, latest } = req.query;
@@ -28,7 +35,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ GET SINGLE PRODUCT
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -64,25 +70,24 @@ router.patch("/:id", protect, adminOnly, async (req, res) => {
     if (req.body.isLatest !== undefined)
       product.isLatest = req.body.isLatest;
 
-    if (req.body.countInStock !== undefined)
-      product.countInStock = req.body.countInStock;
-
-    if (req.body.sizesStock !== undefined)
+    // 🔥 STOCK FIX (IMPORTANT)
+    if (req.body.sizesStock !== undefined) {
       product.sizesStock = req.body.sizesStock;
+      product.countInStock = calculateTotalStock(req.body.sizesStock);
+    }
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 /* =====================================================
-   ADMIN ROUTES
+   CREATE PRODUCT
 ===================================================== */
 
-// ✅ CREATE PRODUCT
-// POST /api/products/admin
 router.post("/admin", protect, adminOnly, async (req, res) => {
   try {
     const {
@@ -91,7 +96,6 @@ router.post("/admin", protect, adminOnly, async (req, res) => {
       description,
       price,
       oldPrice,
-      countInStock,
       images,
       category,
       subcategory,
@@ -99,7 +103,7 @@ router.post("/admin", protect, adminOnly, async (req, res) => {
       isFeatured,
       isPopular,
       isLatest,
-      sizesStock, // ✅ IMPORTANT
+      sizesStock,
     } = req.body;
 
     const product = new Product({
@@ -108,7 +112,6 @@ router.post("/admin", protect, adminOnly, async (req, res) => {
       description,
       price,
       oldPrice,
-      countInStock,
       images,
       category,
       subcategory,
@@ -117,18 +120,22 @@ router.post("/admin", protect, adminOnly, async (req, res) => {
       isPopular,
       isLatest,
 
-      // ✅ SIZE + QTY
       sizesStock: sizesStock || [],
+      countInStock: calculateTotalStock(sizesStock || []),
     });
 
-    const createdProduct = await product.save();
-    res.status(201).json(createdProduct);
+    const created = await product.save();
+    res.status(201).json(created);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// ✅ UPDATE PRODUCT (FULL EDIT)
+/* =====================================================
+   UPDATE PRODUCT (FULL FIX)
+===================================================== */
+
 router.put("/admin/:id", protect, adminOnly, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -143,7 +150,6 @@ router.put("/admin/:id", protect, adminOnly, async (req, res) => {
       description,
       price,
       oldPrice,
-      countInStock,
       images,
       category,
       subcategory,
@@ -151,7 +157,7 @@ router.put("/admin/:id", protect, adminOnly, async (req, res) => {
       isFeatured,
       isPopular,
       isLatest,
-      sizesStock, // ✅ IMPORTANT
+      sizesStock,
     } = req.body;
 
     if (name !== undefined) product.name = name;
@@ -159,7 +165,6 @@ router.put("/admin/:id", protect, adminOnly, async (req, res) => {
     if (description !== undefined) product.description = description;
     if (price !== undefined) product.price = price;
     if (oldPrice !== undefined) product.oldPrice = oldPrice;
-    if (countInStock !== undefined) product.countInStock = countInStock;
     if (images !== undefined) product.images = images;
     if (category !== undefined) product.category = category;
     if (subcategory !== undefined) product.subcategory = subcategory;
@@ -168,17 +173,24 @@ router.put("/admin/:id", protect, adminOnly, async (req, res) => {
     if (isPopular !== undefined) product.isPopular = isPopular;
     if (isLatest !== undefined) product.isLatest = isLatest;
 
-    // ✅ UPDATE SIZE STOCK
-    if (sizesStock !== undefined) product.sizesStock = sizesStock;
+    // 🔥 FIX STOCK SYNC
+    if (sizesStock !== undefined) {
+      product.sizesStock = sizesStock;
+      product.countInStock = calculateTotalStock(sizesStock);
+    }
 
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
+    const updated = await product.save();
+    res.json(updated);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// ✅ DELETE PRODUCT
+/* =====================================================
+   DELETE
+===================================================== */
+
 router.delete("/admin/:id", protect, adminOnly, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -189,6 +201,7 @@ router.delete("/admin/:id", protect, adminOnly, async (req, res) => {
 
     await product.deleteOne();
     res.json({ message: "Product deleted successfully" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
