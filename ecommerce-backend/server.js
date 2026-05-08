@@ -19,12 +19,21 @@ dotenv.config();
 const app = express();
 
 /* ================= MIDDLEWARE ================= */
+
+// JSON parser
 app.use(express.json());
 
+// ✅ FIXED CORS (IMPORTANT FOR VERCEL)
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://ecommerce-mern-noa3.vercel.app",
+      "https://ecommerce-mern-noa3-ifb2d84ow-sana-akrams-projects.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
   })
 );
 
@@ -47,7 +56,7 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB error:", err));
 
-/* ================= HEALTH CHECK (IMPORTANT) ================= */
+/* ================= HEALTH CHECK ================= */
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
