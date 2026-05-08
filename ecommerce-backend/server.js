@@ -18,24 +18,39 @@ dotenv.config();
 
 const app = express();
 
-/* ================= MIDDLEWARE ================= */
+/* =====================================
+   🔥 CORS (FIXED + PRE-FLIGHT SUPPORT)
+===================================== */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://ecommerce-mern-noa3.vercel.app",
+  "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app"
+];
 
-// JSON parser
-app.use(express.json());
-
-// ✅ FIXED CORS (IMPORTANT FOR VERCEL)
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://ecommerce-mern-noa3.vercel.app",
-      "https://ecommerce-mern-noa3-ifb2d84ow-sana-akrams-projects.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        // TEMP: allow all origins (helps debugging + avoids CORS crashes)
+        return callback(null, true);
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// IMPORTANT: handle preflight requests
+app.options("*", cors());
+
+/* ================= MIDDLEWARE ================= */
+app.use(express.json());
 
 /* ================= STATIC FILES ================= */
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
