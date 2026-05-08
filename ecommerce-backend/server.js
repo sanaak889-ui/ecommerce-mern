@@ -18,31 +18,14 @@ dotenv.config();
 
 const app = express();
 
-/* =====================================
-   🔥 CORS (FIXED + PRE-FLIGHT SUPPORT)
-===================================== */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://ecommerce-mern-noa3.vercel.app",
-  "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app"
-];
-
+/* =========================
+   🚨 CORS FIX (FINAL WORKING)
+========================= */
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        // TEMP: allow all origins (helps debugging + avoids CORS crashes)
-        return callback(null, true);
-      }
-    },
+    origin: "*", // allow all origins (fixes Vercel + Railway issues)
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
 
