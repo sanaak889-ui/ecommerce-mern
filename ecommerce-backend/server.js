@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 
-// Routes
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -19,26 +18,27 @@ dotenv.config();
 const app = express();
 
 /* =========================
-   🚨 CORS FIX (FINAL WORKING)
+   🔥 1. CORS FIRST (VERY IMPORTANT)
 ========================= */
-app.use(
-  cors({
-    origin: "*", // allow all origins (fixes Vercel + Railway issues)
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
-// IMPORTANT: handle preflight requests
+/* =========================
+   🔥 2. HANDLE PRE-FLIGHT
+========================= */
 app.options("*", cors());
 
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
 
-/* ================= STATIC FILES ================= */
+/* ================= STATIC ================= */
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* ================= ROUTES ================= */
+/* IMPORTANT: routes AFTER CORS */
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
@@ -52,7 +52,7 @@ app.use("/api/slideshow", slideshowRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB error:", err));
+  .catch((err) => console.log(err));
 
 /* ================= HEALTH CHECK ================= */
 app.get("/", (req, res) => {
@@ -63,5 +63,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log("🚀 Server running on port", PORT);
 });
