@@ -10,4 +10,6 @@ const logoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Logo", logoSchema);
+const Logo = mongoose.model("Logo", logoSchema);
+
+export default Logo;
