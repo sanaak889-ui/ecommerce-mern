@@ -19,32 +19,32 @@ const app = express();
 
 console.log("🚀 SERVER STARTED");
 
-/* ================= CORS ================= */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://ecommerce-mern-noa3.vercel.app",
   "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app"
 ];
 
-const corsOptions = {
+app.use(cors({
   origin: function (origin, callback) {
-    // allow tools like Postman / server-to-server (no origin)
     if (!origin) return callback(null, true);
-
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
-    } else {
-      return callback(null, true); // 🔥 allow all for safety in production debugging
     }
+    return callback(null, true); // allow all for production stability
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-};
+}));
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // 🔥 IMPORTANT FIX for preflight
-
+// IMPORTANT: DO NOT USE app.options("*")
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
 
