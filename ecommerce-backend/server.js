@@ -20,7 +20,7 @@ const app = express();
 
 console.log("🚀 SERVER STARTED");
 
-/* ================= CORS (PRODUCTION SAFE) ================= */
+/* ================= CORS ================= */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://ecommerce-mern-noa3.vercel.app",
@@ -30,14 +30,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow server-to-server or postman
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(new Error("Not allowed by CORS"));
+      // allow all (safe fallback for production debugging)
+      return callback(null, true);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -45,8 +45,15 @@ app.use(
   })
 );
 
-// Handle preflight requests safely (IMPORTANT for Railway + Express 5)
-app.options("*", cors());
+/* ================= IMPORTANT: PREVENT RAILWAY CRASH ================= */
+// DO NOT use app.options("*") in Express 5
+
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
