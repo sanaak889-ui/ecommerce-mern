@@ -21,7 +21,7 @@ const AdminCreate = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/admin/create-admin",
+        `${import.meta.env.VITE_API_URL}/admin/create-admin`,
         { name, email, password },
         {
           headers: { Authorization: `Bearer ${token}` },
