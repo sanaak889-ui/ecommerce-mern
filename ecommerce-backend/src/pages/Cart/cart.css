@@ -1,0 +1,124 @@
+.amazon-cart-page {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: #f2f2f2;
+  font-family: Arial, sans-serif;
+}
+
+/* LEFT SIDE */
+.amazon-left {
+  flex: 3;
+  background: white;
+  padding: 15px;
+}
+
+.amazon-item {
+  display: flex;
+  gap: 15px;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+}
+
+.amazon-item img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.amazon-info h4 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.price {
+  color: #b12704;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Quantity buttons */
+.qty-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-box button {
+  padding: 5px 10px;
+  font-size: 16px;
+  background: #ffd814;
+  border: 1px solid #fcd200;
+  cursor: pointer;
+}
+
+.remove-btn {
+  margin-top: 5px;
+  background: none;
+  border: none;
+  color: #007185;
+  cursor: pointer;
+}
+
+/* RIGHT CHECKOUT BOX */
+.amazon-right {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  height: fit-content;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.amazon-right input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+}
+
+.pay-btn {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.pay-btn.cash {
+  background: #ffd814;
+}
+
+.pay-btn.card {
+  background: #232f3e;
+  color: white;
+}
+
+.order-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ffa41c;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ORDER POPUP */
+.order-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-box {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+}
