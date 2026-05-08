@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 
+/* ================= ROUTES ================= */
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -19,34 +20,37 @@ const app = express();
 
 console.log("🚀 SERVER STARTED");
 
+/* ================= CORS (PRODUCTION SAFE) ================= */
 const allowedOrigins = [
   "http://localhost:5173",
   "https://ecommerce-mern-noa3.vercel.app",
   "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app"
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(null, true); // allow all for production stability
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow server-to-server or postman
+      if (!origin) return callback(null, true);
 
-// IMPORTANT: DO NOT USE app.options("*")
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
+
+// Handle preflight requests safely (IMPORTANT for Railway + Express 5)
+app.options("*", cors());
+
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 /* ================= STATIC FILES ================= */
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
