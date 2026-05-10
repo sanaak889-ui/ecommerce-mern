@@ -1,4 +1,5 @@
-﻿import express from "express";
+﻿
+import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -21,48 +22,25 @@ const app = express();
 console.log("🚀 SERVER STARTED");
 
 /* ================= CORS ================= */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://ecommerce-mern-noa3.vercel.app",
-  "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app"
-];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // allow all (safe fallback for production debugging)
-      return callback(null, true);
-    },
+    origin: true,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
-/* ================= IMPORTANT: PREVENT RAILWAY CRASH ================= */
-// DO NOT use app.options("*") in Express 5
+/* ================= IMPORTANT ================= */
 
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
-/* ================= MIDDLEWARE ================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ================= STATIC FILES ================= */
+
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* ================= ROUTES ================= */
+
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
@@ -72,20 +50,24 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/admin/logo", logoRoutes);
 app.use("/api/slideshow", slideshowRoutes);
 
+/* ================= HEALTH CHECK ================= */
+
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
 /* ================= DATABASE ================= */
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB error:", err));
 
-/* ================= HEALTH CHECK ================= */
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
-
 /* ================= SERVER ================= */
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
