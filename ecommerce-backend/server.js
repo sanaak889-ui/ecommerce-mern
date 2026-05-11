@@ -53,14 +53,16 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT;
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000
+})
+.then(() => {
+  console.log("MongoDB connected");
 
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log("Server running on PORT:", PORT);
-    });
-  })
-  .catch((err) => {
-    console.log("MongoDB error:", err);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log("Server running on PORT:", PORT);
   });
+})
+.catch((err) => {
+  console.log("MongoDB ERROR:", err);
+});
