@@ -7,12 +7,13 @@ const AdminLogo = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // FETCH LOGO
+  /* ================= FETCH LOGO ================= */
   const fetchLogo = async () => {
     try {
-      const { data } = await api.get("/admin/logo");
+      const { data } = await api.get("/api/logo"); // ✅ correct base route
       setLogo(data || null);
     } catch (err) {
+      console.log(err);
       toast.error("Failed to fetch logo");
     }
   };
@@ -21,21 +22,22 @@ const AdminLogo = () => {
     fetchLogo();
   }, []);
 
-  // DELETE LOGO
+  /* ================= DELETE LOGO ================= */
   const handleDelete = async () => {
     if (!logo?._id) return;
 
     try {
-      await api.delete(`/admin/logo/${logo._id}`);
+      await api.delete(`/api/logo/${logo._id}`); // ✅ FIXED
       setLogo(null);
       setFile(null);
       toast.success("Logo deleted!");
     } catch (err) {
+      console.log(err);
       toast.error("Delete failed");
     }
   };
 
-  // UPLOAD / UPDATE LOGO
+  /* ================= UPLOAD / UPDATE ================= */
   const handleUpload = async (e) => {
     e.preventDefault();
 
@@ -53,8 +55,8 @@ const AdminLogo = () => {
       let res;
 
       if (logo?._id) {
-        res = await api.put(
-          `/admin/logo/${logo._id}`,
+        // UPDATE
+        res = await api.put(`/api/logo/${logo._id}`, // ✅ FIXED
           formData,
           {
             headers: {
@@ -65,22 +67,18 @@ const AdminLogo = () => {
 
         toast.success("Logo updated!");
       } else {
-        res = await api.post(
-          "/admin/logo",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        // CREATE
+        res = await api.post("/api/logo", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         toast.success("Logo uploaded!");
       }
 
       setLogo(res.data);
       setFile(null);
-
     } catch (err) {
       console.log(err);
       toast.error(err?.response?.data?.message || "Upload failed");
@@ -114,14 +112,12 @@ const AdminLogo = () => {
       {/* PREVIEW */}
       {logo?.image && (
         <div className="flex flex-col items-center gap-3 rounded bg-white p-4 shadow">
-          
           <img
             src={logo.image}
             alt="Logo"
             className="h-16 object-contain"
           />
 
-          {/* DELETE BUTTON */}
           <button
             onClick={handleDelete}
             className="rounded bg-red-500 px-4 py-1 text-white"

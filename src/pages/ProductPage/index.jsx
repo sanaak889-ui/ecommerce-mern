@@ -26,53 +26,86 @@ const ProductPage = () => {
 
   const { playClick } = useSound();
 
-  // --- PROCESS SIZES ---
+  // PROCESS SIZES
   const processSizes = (sizesStock) => {
     if (!sizesStock) return [];
-    if (Array.isArray(sizesStock)) return sizesStock;
+
+    if (Array.isArray(sizesStock)) {
+      return sizesStock;
+    }
+
     if (typeof sizesStock === "object") {
       return Object.entries(sizesStock).map(([size, qty]) => ({
         size,
         qty,
       }));
     }
+
     return [];
   };
 
+  // FETCH PRODUCT
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`);
-      const data = await res.json();
-      setProduct(data);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/products/${id}`
+        );
 
-      setActiveImage(data.images?.[0]);
+        const data = await res.json();
 
-      const sizes = processSizes(data.sizesStock);
-      const firstAvailable = sizes.find((s) => s.qty > 0);
-      if (firstAvailable) setSelectedSize(firstAvailable.size);
+        // IMPORTANT FIX
+        if (!data || data.message) {
+          console.log("Product not found");
+          return;
+        }
+
+        setProduct(data);
+
+        if (data.images?.length > 0) {
+          setActiveImage(data.images[0]);
+        }
+
+        const sizes = processSizes(data.sizesStock);
+
+        const firstAvailable = sizes.find((s) => s.qty > 0);
+
+        if (firstAvailable) {
+          setSelectedSize(firstAvailable.size);
+        }
+      } catch (err) {
+        console.error("Product fetch error:", err);
+      }
     };
+
     fetchProduct();
   }, [id]);
 
-  if (!product) return <div className="py-20 text-center">Loading...</div>;
+  // LOADING
+  if (!product) {
+    return <div className="py-20 text-center">Loading...</div>;
+  }
 
   const sizes = processSizes(product.sizesStock);
 
-  // ✅ FIXED STOCK LOGIC
+  // STOCK LOGIC
   const totalStock = sizes.reduce((acc, s) => acc + (s.qty || 0), 0);
+
   const hasSizes = sizes.length > 0;
 
   const inStock = hasSizes
     ? totalStock > 0
     : product?.countInStock > 0;
 
-  // Discount
+  // DISCOUNT
   const discountPercent =
     product.oldPrice && product.oldPrice > product.price
-      ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+      ? Math.round(
+          ((product.oldPrice - product.price) / product.oldPrice) * 100
+        )
       : 0;
 
-  // --- CART ---
+  // CART
   const handleCart = () => {
     if (hasSizes && !selectedSize) {
       return toast.error("❌ Please select a size");
@@ -92,7 +125,11 @@ const ProductPage = () => {
     }
 
     playClick();
-    addToCart({ ...product, selectedSize: hasSizes ? selectedSize : null });
+
+    addToCart({
+      ...product,
+      selectedSize: hasSizes ? selectedSize : null,
+    });
 
     toast.success(
       hasSizes
@@ -101,33 +138,39 @@ const ProductPage = () => {
     );
   };
 
-  // --- WISHLIST ---
+  // WISHLIST
   const handleWishlist = () => {
     if (!inStock) return toast.error("❌ Out of Stock");
 
-    if (wishlistItems.find((p) => p._id === product._id))
+    if (wishlistItems.find((p) => p._id === product._id)) {
       return toast("✨ Already in Wishlist");
+    }
 
     playClick();
+
     addToWishlist(product);
+
     toast.success("💖 Added to Wishlist");
   };
 
-  // --- COMPARE ---
+  // COMPARE
   const handleCompare = () => {
     if (!inStock) return toast.error("❌ Out of Stock");
 
-    if (compareItems.find((p) => p._id === product._id))
+    if (compareItems.find((p) => p._id === product._id)) {
       return toast("✨ Already in Compare");
+    }
 
     playClick();
+
     addToCompare(product);
+
     toast.success("⚡ Added to Compare");
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Back */}
+      {/* BACK BUTTON */}
       <button
         onClick={() => navigate(-1)}
         className="mb-6 inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold hover:bg-black hover:text-white"
@@ -136,15 +179,20 @@ const ProductPage = () => {
       </button>
 
       <div className="grid gap-10 md:grid-cols-2">
+
         {/* LEFT */}
         <div className="flex gap-4">
+
+          {/* THUMBNAILS */}
           <div className="flex flex-col gap-3">
             {product.images?.map((img, i) => (
               <div
                 key={i}
                 onClick={() => setActiveImage(img)}
-                className={`h-20 w-20 rounded border cursor-pointer overflow-hidden ${
-                  activeImage === img ? "border-red-500" : "border-gray-200"
+                className={`h-20 w-20 overflow-hidden rounded border cursor-pointer ${
+                  activeImage === img
+                    ? "border-red-500"
+                    : "border-gray-200"
                 }`}
               >
                 <img
@@ -158,6 +206,7 @@ const ProductPage = () => {
             ))}
           </div>
 
+          {/* MAIN IMAGE */}
           <div
             className="relative flex-1 overflow-hidden rounded-lg border"
             onMouseEnter={() => setZoom(true)}
@@ -187,63 +236,82 @@ const ProductPage = () => {
 
         {/* RIGHT */}
         <div className="flex flex-col gap-4">
-          <h1 className="text-2xl font-bold">{product.name}</h1>
+
+          <h1 className="text-2xl font-bold">
+            {product.name}
+          </h1>
 
           <div className="flex items-center gap-2">
             <Rating value={product.rating || 0} readOnly />
+
             <span className="text-sm text-gray-600">
               ({product.reviews || 0} reviews)
             </span>
           </div>
 
-          <p className="text-gray-600">{product.description}</p>
+          <p className="text-gray-600">
+            {product.description}
+          </p>
 
           <div className="flex items-center gap-4">
+
             {product.oldPrice && (
               <span className="text-gray-400 line-through">
                 ${product.oldPrice}
               </span>
             )}
+
             <span className="text-3xl font-bold text-red-500">
               ${product.price}
             </span>
           </div>
 
-          {/* SIZE */}
+          {/* SIZES */}
           {sizes.length > 0 && (
             <div className="mt-3">
-              <p className="mb-2 text-sm font-semibold">Select Size</p>
+
+              <p className="mb-2 text-sm font-semibold">
+                Select Size
+              </p>
+
               <div className="flex gap-3">
+
                 {sizes.map(({ size, qty }) => (
                   <button
                     key={size}
                     disabled={qty <= 0}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded border font-semibold transition
+                    className={`rounded border px-4 py-2 font-semibold transition
                       ${
                         selectedSize === size
                           ? "bg-black text-white"
                           : "bg-white hover:bg-gray-100"
                       }
-                      ${qty <= 0 && "opacity-40 cursor-not-allowed"}
+                      ${
+                        qty <= 0
+                          ? "cursor-not-allowed opacity-40"
+                          : ""
+                      }
                     `}
                   >
                     {size} ({qty})
                   </button>
                 ))}
+
               </div>
             </div>
           )}
 
           {/* ACTIONS */}
           <div className="mt-4 flex gap-3">
+
             <button
               onClick={handleCart}
               disabled={!inStock}
               className={`rounded px-6 py-3 font-bold text-white ${
                 inStock
                   ? "bg-red-500 hover:bg-red-600"
-                  : "bg-gray-400 cursor-not-allowed"
+                  : "cursor-not-allowed bg-gray-400"
               }`}
             >
               {inStock ? "Add to Cart" : "Out of Stock"}
@@ -270,6 +338,7 @@ const ProductPage = () => {
             >
               <IoMdGitCompare />
             </button>
+
           </div>
         </div>
       </div>

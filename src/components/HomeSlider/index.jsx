@@ -10,14 +10,14 @@ import { Navigation, Autoplay } from "swiper/modules";
 const HomeSlider = () => {
   const [slides, setSlides] = useState([]);
 
-  const fetchSlides = async () => {
-    try {
-      const { data } = await api.get("/slideshow");
-      setSlides(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+ const fetchSlides = async () => {
+  try {
+    const { data } = await api.get("/slideshow"); // ✅ correct
+    setSlides(data);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   useEffect(() => {
     fetchSlides();
@@ -41,17 +41,20 @@ const HomeSlider = () => {
 
           {slides.length > 0 ? (
             slides.map((slide) => (
-              <SwiperSlide key={slide._id}>
+              <SwiperSlide key={slide._id || slide.image}>
                 <div className="w-full overflow-hidden rounded-lg md:rounded-[20px]">
                   <img
                     src={slide.image}
                     className="h-[180px] w-full object-cover sm:h-[250px] md:h-[350px] lg:h-[420px]"
+                    alt="slide"
                   />
                 </div>
               </SwiperSlide>
             ))
           ) : (
-            <p className="p-5 text-center">No slides found</p>
+            <div className="p-5 text-center text-gray-500">
+              No slides found
+            </div>
           )}
 
         </Swiper>

@@ -9,8 +9,10 @@ import { BsGridFill } from "react-icons/bs";
 const ProductListing = () => {
   const { category, subcategory, subSubcategory } = useParams();
 
-  // 🔹 STATES
+  // STATES
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [priceRange, setPriceRange] = useState([100, 60000]);
   const [selectedRating, setSelectedRating] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState(
@@ -18,21 +20,31 @@ const ProductListing = () => {
   );
   const [viewType, setViewType] = useState("grid");
 
-  // 🔹 FETCH PRODUCTS FROM BACKEND
+  // FETCH PRODUCTS
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`);
+        setLoading(true);
+
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/products`
+        );
+
         const data = await res.json();
-        setProducts(data);
+
+        setProducts(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Product fetch error:", err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
-  // 🔹 AUTO SELECT CATEGORY FROM URL
+  // AUTO CATEGORY FROM URL
   useEffect(() => {
     if (category) setSelectedCategories([category]);
   }, [category]);
@@ -41,7 +53,7 @@ const ProductListing = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [selectedRating]);
 
-  // 🔹 FILTER LOGIC
+  // FILTER LOGIC
   const filteredProducts = products.filter((p) => {
     const urlCategoryMatch =
       !category || p.category?.toLowerCase() === category.toLowerCase();
@@ -62,7 +74,8 @@ const ProductListing = () => {
 
     const ratingMatch = !selectedRating || p.rating >= selectedRating;
 
-    const priceMatch = p.price >= priceRange[0] && p.price <= priceRange[1];
+    const priceMatch =
+      p.price >= priceRange[0] && p.price <= priceRange[1];
 
     return (
       urlCategoryMatch &&
@@ -73,6 +86,15 @@ const ProductListing = () => {
       priceMatch
     );
   });
+
+  // LOADING UI
+  if (loading) {
+    return (
+      <div className="py-20 text-center text-lg text-gray-500">
+        Loading products...
+      </div>
+    );
+  }
 
   return (
     <section className="py-8">
@@ -91,8 +113,9 @@ const ProductListing = () => {
         {/* RIGHT SIDE */}
         <div className="w-full flex-1">
 
-          {/* GRID / LIST BAR */}
-         <div className="z-[99] sticky top-[80px] mb-4 flex flex-col gap-2 rounded-md bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          {/* TOP BAR */}
+          <div className="z-[99] sticky top-[80px] mb-4 flex flex-col gap-2 rounded-md bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 onClick={() => setViewType("list")}
@@ -116,32 +139,24 @@ const ProductListing = () => {
                 <BsGridFill className="text-[16px]" />
               </Button>
 
-              <span className="font-[500] text-[12px] text-gray-600 sm:text-[14px]">
-                There are {filteredProducts.length} products
+              <span className="font-medium text-[12px] text-gray-600 sm:text-[14px]">
+                {filteredProducts.length} products found
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-[500] text-[14px] text-gray-600">
-                Sort By
-              </span>
-              <Button className="!border-2 !border-black !bg-white !text-black !text-[12px]">
-                Name, A to Z
-              </Button>
-            </div>
           </div>
 
           {/* PRODUCTS */}
           <div
-              className={
-                viewType === "grid"
-                  ? "grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-                  : "flex flex-col gap-4"
-              }
-            >
+            className={
+              viewType === "grid"
+                ? "grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                : "flex flex-col gap-4"
+            }
+          >
             {filteredProducts.map((item, index) => {
-              // ✅ Determine if product is in stock
               const sizesStock = item.sizesStock || [];
+
               const inStock =
                 item.countInStock > 0 ||
                 (Array.isArray(sizesStock) &&
