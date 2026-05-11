@@ -2,6 +2,8 @@
 
 const app = express();
 
+console.log("🚀 FILE LOADED CORRECTLY");
+
 app.get("/", (req, res) => {
   res.send("Backend working");
 });
@@ -9,5 +11,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  console.log("🔥 SERVER STARTED ON PORT:", PORT);
 });
