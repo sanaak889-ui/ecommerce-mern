@@ -10,7 +10,7 @@ const AdminLogo = () => {
   /* ================= FETCH LOGO ================= */
   const fetchLogo = async () => {
     try {
-      const { data } = await api.get("/api/logo"); // ✅ correct base route
+      const { data } = await api.get("/logo"); // ✅ correct base route
       setLogo(data || null);
     } catch (err) {
       console.log(err);
@@ -27,7 +27,7 @@ const AdminLogo = () => {
     if (!logo?._id) return;
 
     try {
-      await api.delete(`/api/logo/${logo._id}`); // ✅ FIXED
+      await api.delete(`/logo/${logo._id}`); // ✅ FIXED
       setLogo(null);
       setFile(null);
       toast.success("Logo deleted!");
@@ -56,7 +56,7 @@ const AdminLogo = () => {
 
       if (logo?._id) {
         // UPDATE
-        res = await api.put(`/api/logo/${logo._id}`, // ✅ FIXED
+        res = await api.put(`/logo/${logo._id}`, formData, { // ✅ FIXED
           formData,
           {
             headers: {
@@ -68,7 +68,7 @@ const AdminLogo = () => {
         toast.success("Logo updated!");
       } else {
         // CREATE
-        res = await api.post("/api/logo", formData, {
+        res = await api.post("/logo", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

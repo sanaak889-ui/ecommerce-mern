@@ -1,12 +1,15 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from "react-router-dom"; 
-import HomeSlider from '../../components/HomeSlider';
-import HomeCatSlider from '../../components/HomeCatSlider';
+﻿import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+
+import HomeSlider from "../../components/HomeSlider";
+import HomeCatSlider from "../../components/HomeCatSlider";
 import AdsBannerSlider from "../../components/AdsBannerSlider";
 import ProductsSlider from "../../components/ProductsSlider";
 import PromoSlider from "../../components/PromoSlider";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+
 import ServiceHighlights from "../../components/ServiceHighlights";
 import MegaMenu from "../../components/MegaMenu";
 import FlashSaleCountdown from "../../components/FlashSaleTimer";
@@ -22,54 +25,93 @@ const Home = () => {
     setValue(newValue);
   };
 
-  // Fetch products from backend
+  // ================= FETCH PRODUCTS =================
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/products`
+        );
+
         const data = await res.json();
-        setAllProducts(data);
+
+        setAllProducts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching products:", error);
+        setAllProducts([]);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
- // Filter in-stock products only
-const inStockProducts = useMemo(
-  () => allProducts.filter(p => p.countInStock > 0),
-  [allProducts]
-);
+  // ================= IN STOCK PRODUCTS =================
+  const inStockProducts = useMemo(
+    () =>
+      allProducts.filter((p) => {
+        // direct stock
+        if (p.countInStock > 0) return true;
 
-// ✅ Sections with toggles
-const featuredProducts = useMemo(
-  () => inStockProducts.filter(p => p.isFeatured || p.featured),
-  [inStockProducts]
-);
+        // sizes stock
+        if (Array.isArray(p.sizesStock)) {
+          return p.sizesStock.some((s) => s.qty > 0);
+        }
 
-const popularProducts = useMemo(
-  () => inStockProducts.filter(p => p.isPopular || p.popular),
-  [inStockProducts]
-);
+        return false;
+      }),
+    [allProducts]
+  );
 
-const latestProducts = useMemo(
-  () => [...inStockProducts]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .filter(p => p.isLatest || p.latest || true), // fallback to all in-stock if missing
-  [inStockProducts]
-);
+  // ================= FEATURED =================
+  const featuredProducts = useMemo(
+    () =>
+      inStockProducts.filter(
+        (p) => p.isFeatured || p.featured
+      ),
+    [inStockProducts]
+  );
 
-const beautyProducts = useMemo(
-  () => inStockProducts.filter(p => (p.category?.toLowerCase() === "beauty")),
-  [inStockProducts]
-);
+  // ================= POPULAR =================
+  const popularProducts = useMemo(
+    () =>
+      inStockProducts.filter(
+        (p) => p.isPopular || p.popular
+      ),
+    [inStockProducts]
+  );
 
+  // ================= LATEST =================
+  const latestProducts = useMemo(
+    () =>
+      [...inStockProducts]
+        .filter((p) => p.isLatest || p.latest)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt) -
+            new Date(a.createdAt)
+        ),
+    [inStockProducts]
+  );
 
+  // ================= BEAUTY =================
+  const beautyProducts = useMemo(
+    () =>
+      inStockProducts.filter(
+        (p) =>
+          p.category?.toLowerCase() === "beauty"
+      ),
+    [inStockProducts]
+  );
+
+  // ================= LOADING =================
   if (loading) {
-    return <div className="py-20 text-center text-xl">Loading products...</div>;
+    return (
+      <div className="py-20 text-center text-xl">
+        Loading products...
+      </div>
+    );
   }
 
   return (
@@ -79,29 +121,67 @@ const beautyProducts = useMemo(
       <MegaSaleBanner />
       <FlashSaleCountdown />
 
-      {/* PROMO + 4 IMAGE SLIDER SECTION */}
-     <section className="overflow-hidden bg-white py-6">
-  <div className="container mx-auto flex max-w-full flex-col gap-5 overflow-hidden lg:flex-row">
+      {/* PROMO SECTION */}
+      <section className="overflow-hidden bg-white py-6">
+        <div className="container mx-auto flex max-w-full flex-col gap-5 overflow-hidden lg:flex-row">
+
+          {/* LEFT */}
           <div className="part1 relative h-[250px] w-full min-w-0 overflow-hidden sm:h-[320px] lg:h-[430px] lg:w-[70%]">
             <PromoSlider />
           </div>
 
+          {/* RIGHT */}
           <div className="flex w-full min-w-0 flex-col gap-4 sm:flex-row lg:w-[30%] lg:flex-col">
+
+            {/* BANNER 1 */}
             <div className="bannerBoxV2 group relative overflow-hidden rounded-md">
-              <img src="JD.jpg" className="h-[170px] w-full object-cover transition-all duration-150 group-hover:scale-105 md:h-[200px] lg:h-[215px]" alt="Dream Offer"/>
+              <img
+                src="JD.jpg"
+                className="h-[170px] w-full object-cover transition-all duration-150 group-hover:scale-105 md:h-[200px] lg:h-[215px]"
+                alt="Dream Offer"
+              />
+
               <div className="absolute left-0 top-0 z-50 flex h-full flex-col justify-center gap-2 p-6 text-white">
-                <h2 className="font-bold text-[#ff5252] text-[18px] lg:text-[28px]">Dream Offer</h2>
-                <span className="font-bold text-[#ff5252] text-[30px]">20%</span>
-                <Link to="/productListing/Jewellery" className="mt-4 w-max rounded-md bg-[#ff5252] px-5 py-2 font-semibold hover:bg-[#e64545]">SHOP NOW</Link>
+                <h2 className="font-bold text-[18px] text-[#ff5252] lg:text-[28px]">
+                  Dream Offer
+                </h2>
+
+                <span className="font-bold text-[30px] text-[#ff5252]">
+                  20%
+                </span>
+
+                <Link
+                  to="/productListing/Jewellery"
+                  className="mt-4 w-max rounded-md bg-[#ff5252] px-5 py-2 font-semibold hover:bg-[#e64545]"
+                >
+                  SHOP NOW
+                </Link>
               </div>
             </div>
 
+            {/* BANNER 2 */}
             <div className="bannerBoxV2 group relative overflow-hidden rounded-md">
-              <img src="FT1.jpg" className="h-[170px] w-full object-cover transition-all duration-150 group-hover:scale-105 md:h-[200px] lg:h-[215px]" alt="Footwear Offer"/>
+              <img
+                src="FT1.jpg"
+                className="h-[170px] w-full object-cover transition-all duration-150 group-hover:scale-105 md:h-[200px] lg:h-[215px]"
+                alt="Footwear Offer"
+              />
+
               <div className="absolute left-0 top-0 z-50 flex h-full flex-col justify-center gap-2 p-6 text-white">
-                <h2 className="font-bold text-[#ff5252] text-[18px] lg:text-[28px]">Buy Shoes On</h2>
-                <span className="font-bold text-[#ff5252] text-[30px]">50%</span>
-                <Link to="/productListing/Footwear" className="mt-4 w-max rounded-md bg-[#ff5252] px-5 py-2 font-semibold hover:bg-[#e64545]">SHOP NOW</Link>
+                <h2 className="font-bold text-[18px] text-[#ff5252] lg:text-[28px]">
+                  Buy Shoes On
+                </h2>
+
+                <span className="font-bold text-[30px] text-[#ff5252]">
+                  50%
+                </span>
+
+                <Link
+                  to="/productListing/Footwear"
+                  className="mt-4 w-max rounded-md bg-[#ff5252] px-5 py-2 font-semibold hover:bg-[#e64545]"
+                >
+                  SHOP NOW
+                </Link>
               </div>
             </div>
           </div>
@@ -111,13 +191,21 @@ const beautyProducts = useMemo(
       {/* POPULAR PRODUCTS */}
       <section className="bg-white py-8">
         <div className="container mx-auto">
+
           <div className="flex items-center justify-between">
+
             <div className="leftsec mb-3 w-full lg:mb-0 lg:w-[40%]">
-              <h2 className="font-[600] text-[20px]">Popular Products</h2>
-              <p className="text-[14px]">Do not miss the current offers.</p>
+              <h2 className="font-[600] text-[20px]">
+                Popular Products
+              </h2>
+
+              <p className="text-[14px]">
+                Do not miss the current offers.
+              </p>
             </div>
 
             <div className="rightsec group relative w-full overflow-x-auto lg:w-[60%]">
+
               <Tabs
                 value={value}
                 onChange={handleChange}
@@ -135,27 +223,45 @@ const beautyProducts = useMemo(
                 <Tab label="Furniture" component={Link} to="/productListing/Furniture" />
                 <Tab label="Perfumes" component={Link} to="/productListing/Perfumes" />
               </Tabs>
+
               <MegaMenu />
             </div>
           </div>
 
-          <ProductsSlider items={5} products={popularProducts} />
+          <ProductsSlider
+            items={5}
+            products={popularProducts}
+          />
         </div>
       </section>
 
       {/* LATEST PRODUCTS */}
       <section className="bg-white py-6">
         <div className="container mx-auto">
-          <h2 className="mb-3 text-xl font-bold">Latest Products</h2>
-          <ProductsSlider items={5} products={latestProducts} />
+          <h2 className="mb-3 text-xl font-bold">
+            Latest Products
+          </h2>
+
+          <ProductsSlider
+            items={5}
+            products={latestProducts}
+          />
         </div>
       </section>
 
       {/* FEATURED PRODUCTS */}
       <section className="bg-white py-6">
         <div className="container mx-auto">
-          <h2 className="mb-3 text-xl font-bold">Featured Products</h2>
-          <ProductsSlider items={5} products={featuredProducts} />
+
+          <h2 className="mb-3 text-xl font-bold">
+            Featured Products
+          </h2>
+
+          <ProductsSlider
+            items={5}
+            products={featuredProducts}
+          />
+
           <div className="mt-6 py-5">
             <AdsBannerSlider items={4} />
           </div>
@@ -165,8 +271,15 @@ const beautyProducts = useMemo(
       {/* BEAUTY PRODUCTS */}
       <section className="bg-white py-6">
         <div className="container mx-auto">
-          <h2 className="mb-3 text-xl font-bold">Beauty Products</h2>
-          <ProductsSlider items={5} products={beautyProducts} />
+
+          <h2 className="mb-3 text-xl font-bold">
+            Beauty Products
+          </h2>
+
+          <ProductsSlider
+            items={5}
+            products={beautyProducts}
+          />
         </div>
       </section>
 
