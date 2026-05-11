@@ -20,18 +20,20 @@ const app = express();
 console.log("🚀 SERVER STARTED");
 
 /* CORS */
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://ecommerce-mern-noa3.vercel.app",
-    "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://ecommerce-mern-noa3.vercel.app",
+      "https://ecommerce-mern-noa3-git-main-sana-akrams-projects.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-/* STATIC */
+/* STATIC FILES */
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* ROUTES */
@@ -44,19 +46,23 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/admin/logo", logoRoutes);
 app.use("/api/slideshow", slideshowRoutes);
 
-/* DB */
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log("MongoDB error:", err));
-
-/* HEALTH */
+/* HEALTH CHECK */
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-/* IMPORTANT FIX */
 const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("🚀 Server running on PORT:", PORT);
-});
+/* 🔥 IMPORTANT: Start server ONLY after DB connects */
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log("🚀 Server running on PORT:", PORT);
+    });
+  })
+  .catch((err) => {
+    console.log("MongoDB error:", err);
+  });
