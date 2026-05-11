@@ -51,16 +51,14 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 
-/* 🔥 IMPORTANT: Start server ONLY after DB connects */
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
 
     app.listen(PORT, "0.0.0.0", () => {
-      console.log("🚀 Server running on PORT:", PORT);
+      console.log("Server running on PORT:", PORT);
     });
   })
   .catch((err) => {
