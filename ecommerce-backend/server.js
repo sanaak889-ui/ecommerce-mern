@@ -38,13 +38,20 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* ROUTES */
 app.use("/api/auth", authRoutes);
+
 app.use("/api/products", productRoutes);
+
 app.use("/api/orders", orderRoutes);
+
 app.use("/api/admin", adminRoutes);
-app.use("/api/home-content", homeContentRoutes);
-app.use("/api/upload", uploadRoutes);
+
 app.use("/api/logo", logoRoutes);
+
 app.use("/api/slideshow", slideshowRoutes);
+
+app.use("/api/home-content", homeContentRoutes);
+
+app.use("/api/upload", uploadRoutes);
 
 /* HEALTH CHECK */
 app.get("/", (req, res) => {
