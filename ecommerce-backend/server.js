@@ -43,7 +43,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/home-content", homeContentRoutes);
 app.use("/api/upload", uploadRoutes);
-app.use("/api/admin/logo", logoRoutes);
+app.use("/api/logo", logoRoutes);
 app.use("/api/slideshow", slideshowRoutes);
 
 /* HEALTH CHECK */
